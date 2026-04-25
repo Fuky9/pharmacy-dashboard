@@ -1,3 +1,7 @@
+# Build files and generated directories
+dist/
+build/
+
 # Logs
 logs
 *.log
