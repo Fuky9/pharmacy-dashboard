@@ -10,6 +10,18 @@ const PORT = process.env.PORT || 5001;
 // Middleware
 app.use(express.json());
 
+// Logging middleware for practice
+const loggerMiddleware = (req, res, next) => {
+  res.on("finish", () => {
+    const time = new Date().toISOString();
+    console.log(`[${time}] ${req.method} ${req.url} ${res.statusCode}`);
+  });
+
+  next();
+};
+
+app.use(loggerMiddleware);
+
 app.use("/api", pharmacyRoutes);
 
 app.listen(PORT, () => {
