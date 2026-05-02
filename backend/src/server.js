@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import pharmacyRoutes from "./routes/pharmacyRoutes.js";
+import connectDB from "./config/db.js";
 
 dotenv.config();
 
@@ -22,8 +23,15 @@ const loggerMiddleware = (req, res, next) => {
 
 app.use(loggerMiddleware);
 
-app.use("/api", pharmacyRoutes);
+app.use("/api/pharmacies", pharmacyRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port: ${PORT}`);
-});
+// Connect to the database and then start the server
+const startServer = async () => {
+  await connectDB();
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port: ${PORT}`);
+  });
+};
+
+startServer();
