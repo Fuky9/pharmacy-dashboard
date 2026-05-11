@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import pharmacyRoutes from "./routes/pharmacyRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 import connectDB from "./config/db.js";
 
 dotenv.config();
@@ -24,6 +25,7 @@ const loggerMiddleware = (req, res, next) => {
 app.use(loggerMiddleware);
 
 app.use("/api/pharmacies", pharmacyRoutes);
+app.use("/api/tasks", taskRoutes);
 
 // Connect to the database and then start the server
 const startServer = async () => {

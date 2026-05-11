@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import Pharmacy from "../models/Pharmacy.js";
+import Task from "../models/Task.js";
 
 export const getAllPharmacies = async (req, res) => {
   try {
@@ -25,6 +27,7 @@ export const getOnePharmacy = async (req, res) => {
 };
 
 export const createPharmacy = async (req, res) => {
+    //TODO rerfactor with matchedData from express-validator to only get validated data and avoid creating pharmacy with invalid fields
   try {
     const { name, address, manager } = req.body;
     const newPharmacy = await Pharmacy.create({ name, address, manager });
@@ -56,7 +59,21 @@ export const updatePharmacy = async (req, res) => {
 
 export const deletePharmacy = async (req, res) => {
   try {
-    const deletedPharmacy = await Pharmacy.findByIdAndDelete(req.params.id);
+
+    const {id} = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid pharmacy ID" });
+    }
+
+    const taskExists = await Task.exists({ pharmacy: id});
+    // Lepší performance než find, protože nevrací celý dokument, ale pouze boolean hodnotu existence
+
+    if (taskExists) {
+        return res.status(400).json({message: "Cannot delete pharmacy with existing tasks. Please delete the tasks first."});
+    }
+
+    const deletedPharmacy = await Pharmacy.findByIdAndDelete(id);
 
     if (!deletedPharmacy) {
       return res.status(404).json({ message: "Pharmacy not found" });
